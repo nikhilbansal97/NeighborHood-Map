@@ -1,0 +1,11 @@
+#map {
+    height: 100%;
+}
+
+.place {
+    padding: 10px;
+}
+
+html, body {
+  height: 100%;
+}
