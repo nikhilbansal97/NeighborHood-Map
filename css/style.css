@@ -4,6 +4,15 @@
 
 .place {
     padding: 10px;
+    width: 100%;
+}
+
+.filter-btn {
+  width: 100%;
+}
+
+.filter-item {
+  margin-left: 5%;
 }
 
 html, body {

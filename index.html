@@ -7,23 +7,28 @@
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
   <body>
     <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     <ul id="slide-out" class="sidenav">
       <li>
         <div class="user-view">
+          <a class='dropdown-trigger btn filter-btn' href='#' data-target='filter'>Filter</a>
+          <div id="filter" class='dropdown-content' data-bind="foreach: categoryList">
+            <div class='filter-item' data-bind="text: $data, click: $parent.filterPlaces"></div>
+          </div>
           <div class="background" style="background-color: #92a8d1">
             <input  type="text"/>
           </div>
         </div>
-        <div data-bind="foreach: placesList">
-          <div class="waves-effect place" data-bind="text: placeText, click: $parent.changeCurrentPlace(placeText)"></div>
+        <div data-bind="foreach: markersList">
+          <div class="waves-effect place" data-bind="text: title, click: $parent.changeCurrentMarker"></div>
         </div>
       </li>
     </ul>
     <div id="map"></div>
-    <script src="js/app.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBseI5jh21Ijzrb0WsbpL1fhVX0INiS5E&v=3&callback=initMap"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>
