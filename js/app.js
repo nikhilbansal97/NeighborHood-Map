@@ -189,7 +189,7 @@ var PlaceViewModal = function () {
     this.markersList = ko.observableArray(markers);
 
     // Category List
-    this.categoryList = ["Food", "Showrooms", "Garden"];
+    this.categoryList = ["All", "Food", "Showrooms", "Garden"];
 
     // Photos List
     this.photosList = ko.observableArray(photos);
@@ -198,7 +198,14 @@ var PlaceViewModal = function () {
     this.filterPlaces = function (viewModal) {
         return function () {
               var currentCategory = this;
-              tempMarkers.forEach(function (marker) {
+              if (currentCategory == "All") {
+                viewModal.markersList.removeAll();
+                tempMarkers.forEach(function (marker) {
+                  viewModal.markersList.push(marker);
+                  marker.setMap(map);
+                }, this);
+              } else {
+                tempMarkers.forEach(function (marker) {
                   // Check if the category of the marker matches the selected category.
                   // If not, then remove the marker from the viewModal
                   if (currentCategory != marker.category) {
@@ -213,14 +220,15 @@ var PlaceViewModal = function () {
                   } else { // Category matches and the marker is to be displayed in the viewModal.
                     // Check if the marker is already displayed in the ViewModal
                     if (viewModal.markersList.indexOf(marker) == -1) {
-                        // The marker is not present in the list ans hence has to be added.
-                        viewModal.markersList.push(marker);
-                        marker.setMap(map);
+                      // The marker is not present in the list ans hence has to be added.
+                      viewModal.markersList.push(marker);
+                      marker.setMap(map);
                     } else {
                       marker.setMap(map);
                     }
                   }
-              }, this);
+                }, this);
+              };
         };
     }(this);
 
