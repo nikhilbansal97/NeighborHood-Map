@@ -8,9 +8,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" integrity="sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ" crossorigin="anonymous"></script>
   </head>
   <body>
-    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <nav>
+      <div class="nav-wrapper">
+        <i class="fas fa-bars brand-logo sidenav-trigger" aria-hidden="true" data-target="slide-out"></i>
+        <div class="heading">NeighborHood Map!!</div>
+      </div>
+    </nav>
     <ul id="slide-out" class="sidenav">
       <li>
         <div class="user-view">
@@ -18,9 +24,7 @@
           <div id="filter" class='dropdown-content' data-bind="foreach: categoryList">
             <div class='filter-item' data-bind="text: $data, click: $parent.filterPlaces"></div>
           </div>
-          <div class="background" style="background-color: #92a8d1">
-            <input  type="text"/>
-          </div>
+          <div class="background" style="background-color: #92a8d1"></div>
         </div>
         <div data-bind="foreach: markersList">
           <div class="waves-effect place" data-bind="text: title, click: $parent.changeCurrentMarker"></div>

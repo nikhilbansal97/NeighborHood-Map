@@ -15,6 +15,11 @@
   margin-left: 5%;
 }
 
+.heading {
+  text-align: center;
+  font-size: medium;
+}
+
 html, body {
   height: 100%;
 }

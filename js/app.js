@@ -54,10 +54,15 @@ var initialList = [
 var map;
 
 // Markers array
-var markers = []
+var markers = [];
+var tempMarkers = [];
 
 // Photos Array
 var photos = [];
+
+var openInfoWindow = null;
+var defaultIcon;
+var highlightedIcon;
 
 // Callback function when ASync call completes.
 function initMap() {
@@ -66,6 +71,9 @@ function initMap() {
         center: {lat: 30.741482, lng: 76.768066},
         zoom: 13
     });
+
+    defaultIcon = makeMarkerIcon("0091ff");
+    highlightedIcon = makeMarkerIcon("FFFF24");
 
     // Populate the Markers array
     for (i = 0; i < initialList.length; i++) {
@@ -78,12 +86,14 @@ function initMap() {
             position: position,
             title: place,
             id: id,
+            icon: defaultIcon,
             category: category,
             animation: google.maps.Animation.DROP
         });
         markers.push(marker);
     };
     // Get information about the markers from Forequare API.
+    tempMarkers = tempMarkers.concat(markers);
     getMarkersData();
 }
 
@@ -100,7 +110,6 @@ function getMarkersData() {
     });
     Promise.all(imagefetch)
       .then(()=>{
-        console.log(imagefetch)
         for(image of imagefetch){
           image.then(url => photos.push(url))
         }
@@ -118,19 +127,55 @@ function setupInfoWindow() {
         markers[i].photoUrl = photos[i];
         markers[i].addListener('click', function (marker) {
             return function () {
+              toggleBounce(marker);
               populateInfoWindow(marker);
             }
 
+        }(markers[i]));
+        markers[i].addListener('mouseover', function (marker) {
+            return function () {
+              marker.setIcon(highlightedIcon);
+            }
+
+        }(markers[i]));
+        markers[i].addListener('mouseout', function (marker) {
+            return function () {
+              marker.setIcon(defaultIcon);
+            }
         }(markers[i]));
     }
     // Apply bindings after map as been loaded and the images have been received.
     ko.applyBindings(new PlaceViewModal());
 }
 
+function makeMarkerIcon(color) {
+    var icon = new google.maps.MarkerImage(
+      'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' +
+      color + '|40|_|%E2%80%A2',
+      new google.maps.Size(21, 34),
+      new google.maps.Point(0, 0),
+      new google.maps.Point(10, 34),
+      new google.maps.Size(21, 34));
+    return icon;
+}
+
+function toggleBounce(marker) {
+    if (marker.getAnimation() !== null){
+        marker.animation = null;
+    } else {
+        marker.setAnimation(google.maps.Animation.DROP);
+    }
+}
+
 function populateInfoWindow(marker) {
     marker.infoWindow.marker = marker;
     marker.infoWindow.setContent(`<div><img src="${marker.photoUrl}"/></div>`);
     marker.infoWindow.open(map, marker);
+    if (openInfoWindow !== null) {
+        openInfoWindow.close();
+        openInfoWindow = null;
+    }
+    openInfoWindow = marker.infoWindow;
     // Make sure the marker property is cleared if the infowindow is closed.
     marker.infoWindow.addListener('closeclick', function() {
         marker.infoWindow.marker = null;
@@ -143,28 +188,39 @@ var PlaceViewModal = function () {
     // Observable Array to store markers.
     this.markersList = ko.observableArray(markers);
 
-    // Populate the markers list.
-    // markers.forEach(function (marker) {
-    //     this.markersList.push(marker);
-    // }, this);
-
     // Category List
     this.categoryList = ["Food", "Showrooms", "Garden"];
 
-    // Plotos List
+    // Photos List
     this.photosList = ko.observableArray(photos);
 
     // Function to filter the markers.
     this.filterPlaces = function (viewModal) {
         return function () {
-            var currentCategory = this;
-            ko.utils.arrayForEach(viewModal.markersList(), function (marker) {
-                if (currentCategory != marker.category) {
-                    marker.setMap(null);
-                } else {
-                    marker.setMap(map);
-                }
-            });
+              var currentCategory = this;
+              tempMarkers.forEach(function (marker) {
+                  // Check if the category of the marker matches the selected category.
+                  // If not, then remove the marker from the viewModal
+                  if (currentCategory != marker.category) {
+                    // Find the index of the marker in the viewModal list.
+                    var index = viewModal.markersList.indexOf(marker);
+                    // Before removing, check if the marker is being displayed in the viewModal
+                    if (index != -1) {
+                      // The marker category does not match and is present in the viewModal.
+                      viewModal.markersList.remove(marker)
+                      marker.setMap(null);
+                    }
+                  } else { // Category matches and the marker is to be displayed in the viewModal.
+                    // Check if the marker is already displayed in the ViewModal
+                    if (viewModal.markersList.indexOf(marker) == -1) {
+                        // The marker is not present in the list ans hence has to be added.
+                        viewModal.markersList.push(marker);
+                        marker.setMap(map);
+                    } else {
+                      marker.setMap(map);
+                    }
+                  }
+              }, this);
         };
     }(this);
 
