@@ -1,10 +1,11 @@
 // Intialize SideNav
 var sidenav = document.querySelector('.sidenav');
 var sidenavInstance = M.Sidenav.init(sidenav, 'left');
-
+// Initialize Dorp Down
 var dropdown = document.querySelector('.dropdown-trigger');
 var dropdownInstance = M.Dropdown.init(dropdown, {'closeOnCLick': true});
 
+// Sample list for locations.
 var initialList = [
   {
       id: "5454a780498eb34a3823cac3",
@@ -55,6 +56,8 @@ var map;
 
 // Markers array
 var markers = [];
+// Temp markers array to store the markers
+// Acts as the model of the MVVM.
 var tempMarkers = [];
 
 // Photos Array
@@ -66,17 +69,18 @@ var highlightedIcon;
 
 // Callback function when ASync call completes.
 function initMap() {
+
     // Create a map object
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30.741482, lng: 76.768066},
         zoom: 13
     });
-
+    // Create colors for the markers
     defaultIcon = makeMarkerIcon("0091ff");
     highlightedIcon = makeMarkerIcon("FFFF24");
 
     // Populate the Markers array
-    for (i = 0; i < initialList.length; i++) {
+    for (var i = 0; i < initialList.length; i++) {
         var place = initialList[i].place;
         var position = {lat: initialList[i].lat, lng: initialList[i].lng};
         var category = initialList[i].category;
@@ -96,7 +100,10 @@ function initMap() {
     tempMarkers = tempMarkers.concat(markers);
     getMarkersData();
 }
-
+function googleError(){
+    alert("Failed to load data. Check the url");
+};
+// Function to fetch the data for all the markers.
 function getMarkersData() {
     var imagefetch = markers.map(function (marker) {
           var url = "https://api.foursquare.com/v2/venues/" + marker.id + "?client_id=JU2UWXY4QIBEX332XAFFRFJN0HNLGGU4VNLUFANT131W4BK2&client_secret=ILFXGAMSE2ZGLWULK13KCJVEMYQKY3XUJR2ZWHTIUP2F1AXV&v=20120609"
@@ -108,12 +115,14 @@ function getMarkersData() {
               return photoUrl
             })
     });
+    // After all the images have been fetched, then setup the info window
     Promise.all(imagefetch)
       .then(()=>{
         for(image of imagefetch){
           image.then(url => photos.push(url))
         }
       })
+      .catch( (error) => alert(error))
       .then(()=>{
         setupInfoWindow()
       })
@@ -122,7 +131,7 @@ function getMarkersData() {
 // This function creates InfoWindow objects and adds them to the marker.
 function setupInfoWindow() {
     var marker, photoUrl;
-    for (i = 0; i < markers.length; i++) {
+    for (var i = 0; i < markers.length; i++) {
         markers[i].infoWindow = new google.maps.InfoWindow();
         markers[i].photoUrl = photos[i];
         markers[i].addListener('click', function (marker) {
@@ -148,6 +157,7 @@ function setupInfoWindow() {
     ko.applyBindings(new PlaceViewModal());
 }
 
+// Function that creates the colors for the markers.
 function makeMarkerIcon(color) {
     var icon = new google.maps.MarkerImage(
       'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' +
@@ -159,6 +169,7 @@ function makeMarkerIcon(color) {
     return icon;
 }
 
+// Function to toggle the bouncing of the markers
 function toggleBounce(marker) {
     if (marker.getAnimation() !== null){
         marker.animation = null;
@@ -167,6 +178,7 @@ function toggleBounce(marker) {
     }
 }
 
+// Function to add information to the infowindow
 function populateInfoWindow(marker) {
     marker.infoWindow.marker = marker;
     marker.infoWindow.setContent(`<div><img src="${marker.photoUrl}"/></div>`);
@@ -194,7 +206,7 @@ var PlaceViewModal = function () {
     // Photos List
     this.photosList = ko.observableArray(photos);
 
-    // Function to filter the markers.
+    // Callback that will be called when the contents of the list will be filtered.
     this.filterPlaces = function (viewModal) {
         return function () {
               var currentCategory = this;
@@ -232,6 +244,7 @@ var PlaceViewModal = function () {
         };
     }(this);
 
+    // Callback which will be called when the place from the list is clicked.
     this.changeCurrentMarker = function (viewModal) {
       return function () {
           var title = this.title;

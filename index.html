@@ -14,7 +14,9 @@
     <nav>
       <div class="nav-wrapper">
         <i class="fas fa-bars brand-logo sidenav-trigger" aria-hidden="true" data-target="slide-out"></i>
-        <div class="heading">NeighborHood Map!!</div>
+        <div class="heading">NeighborHood Map!!
+          <cite class="right nav-mobile" style="padding-right: 20px;">Powered by ForeSquare API</cite>
+        </div>
       </div>
     </nav>
     <ul id="slide-out" class="sidenav">
@@ -32,7 +34,7 @@
       </li>
     </ul>
     <div id="map"></div>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBseI5jh21Ijzrb0WsbpL1fhVX0INiS5E&v=3&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBseI5jh21Ijzrb0WsbpL1fhVX0INiS5E&v=3&callback=initMap" onerror="googleError()"></script>
     <script src="js/app.js"></script>
   </body>
 </html>
