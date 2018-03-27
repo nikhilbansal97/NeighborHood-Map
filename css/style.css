@@ -23,3 +23,6 @@
 html, body {
   height: 100%;
 }
+ nav .brand-logo{
+   left:0;
+ }

@@ -55,9 +55,9 @@ var initialList = [
 var map;
 
 // Markers array
+// Acts as the model of the MVVM.
 var markers = [];
 // Temp markers array to store the markers
-// Acts as the model of the MVVM.
 var tempMarkers = [];
 
 // Photos Array
