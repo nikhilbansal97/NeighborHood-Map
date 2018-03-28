@@ -215,6 +215,8 @@ var PlaceViewModal = function () {
                 tempMarkers.forEach(function (marker) {
                   viewModal.markersList.push(marker);
                   marker.setMap(map);
+                  marker.infoWindow.close();
+                  toggleBounce(marker);
                 }, this);
               } else {
                 tempMarkers.forEach(function (marker) {
@@ -226,7 +228,7 @@ var PlaceViewModal = function () {
                     // Before removing, check if the marker is being displayed in the viewModal
                     if (index != -1) {
                       // The marker category does not match and is present in the viewModal.
-                      viewModal.markersList.remove(marker)
+                      viewModal.markersList.remove(marker);
                       marker.setMap(null);
                     }
                   } else { // Category matches and the marker is to be displayed in the viewModal.
@@ -235,9 +237,12 @@ var PlaceViewModal = function () {
                       // The marker is not present in the list ans hence has to be added.
                       viewModal.markersList.push(marker);
                       marker.setMap(map);
+                      marker.infoWindow.close();
                     } else {
                       marker.setMap(map);
+                      marker.infoWindow.close();
                     }
+                    toggleBounce(marker);
                   }
                 }, this);
               };
@@ -252,8 +257,11 @@ var PlaceViewModal = function () {
               console.log(title, marker.title);
               if (title != marker.title) {
                   marker.setMap(null);
+                  marker.infoWindow.close();
               } else {
                 marker.setMap(map);
+                toggleBounce(marker);
+                populateInfoWindow(marker);
               }
           })
       }
